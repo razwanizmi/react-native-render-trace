@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/runtime": "^7.25.0",
     "@react-native/eslint-config": "0.76.6",
     "eslint": "^8.19.0",
     "prettier": "2.8.8"
