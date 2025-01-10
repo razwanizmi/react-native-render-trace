@@ -1,7 +1,7 @@
 {
   "name": "react-native-render-trace",
   "version": "1.0.0",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
