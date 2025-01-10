@@ -75,6 +75,3 @@ yarn-error.log
 
 # ESLint
 .eslintcache
-
-# Build directory
-dist
