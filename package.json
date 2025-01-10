@@ -19,10 +19,13 @@
     "@babel/runtime": "^7.25.0",
     "@react-native/babel-preset": "0.76.6",
     "@react-native/eslint-config": "0.76.6",
+    "@react-native/typescript-config": "0.76.6",
+    "@types/react": "^18.2.6",
     "eslint": "^8.19.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "typescript": "5.0.4"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
