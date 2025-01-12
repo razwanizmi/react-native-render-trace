@@ -1,1 +1,1 @@
-export {init} from './RenderTrace';
+export {renderTrace} from './RenderTrace';
