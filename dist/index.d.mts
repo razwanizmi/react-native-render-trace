@@ -1,3 +1,3 @@
-declare function init(): void;
+declare function renderTrace(): void;
 
-export { init };
+export { renderTrace };

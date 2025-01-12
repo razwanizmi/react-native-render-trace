@@ -30,7 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  init: () => init
+  renderTrace: () => renderTrace
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -38,77 +38,83 @@ module.exports = __toCommonJS(index_exports);
 var import_react = __toESM(require("react"));
 var import_react_native = __toESM(require("react-native"));
 var OriginalView = import_react_native.default.View;
-var OriginalImage = import_react_native.default.Image;
 var OriginalTouchableOpacity = import_react_native.default.TouchableOpacity;
-var getMockContainer = (OriginalComponent) => {
-  const FunctionalContainer = ({
+var COLOR_MAP = [
+  "transparent" /* transparent */,
+  "#2ecc71" /* green */,
+  "#f1c40f" /* yellow */,
+  "#f39c12" /* amber */
+];
+var TIMEOUT_MS = 500;
+function RenderTrace() {
+  const [, forceRender] = (0, import_react.useState)({});
+  const isCountingRef = (0, import_react.useRef)(true);
+  const renderCountRef = (0, import_react.useRef)(0);
+  const timeoutRef = (0, import_react.useRef)();
+  const getColor = (0, import_react.useCallback)(() => {
+    const count = renderCountRef.current;
+    return COLOR_MAP[count] || "#e74c3c" /* red */;
+  }, []);
+  const renderWithoutCount = (0, import_react.useCallback)(() => {
+    isCountingRef.current = false;
+    forceRender({});
+    isCountingRef.current = true;
+  }, []);
+  const handleTimeout = (0, import_react.useCallback)(() => {
+    if (renderCountRef.current > 0) {
+      renderCountRef.current = 0;
+      renderWithoutCount();
+    }
+  }, []);
+  const maybeIncrementCount = (0, import_react.useCallback)(() => {
+    if (isCountingRef.current) {
+      renderCountRef.current = renderCountRef.current + 1;
+    }
+  }, []);
+  (0, import_react.useEffect)(() => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(handleTimeout, TIMEOUT_MS);
+    return () => clearTimeout(timeoutRef.current);
+  });
+  maybeIncrementCount();
+  return /* @__PURE__ */ import_react.default.createElement(
+    OriginalView,
+    {
+      style: [styles.colorLayer, { borderColor: getColor() }],
+      pointerEvents: "box-none"
+    }
+  );
+}
+var styles = import_react_native.default.StyleSheet.create({
+  colorLayer: {
+    borderWidth: 3,
+    bottom: 0,
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0
+  }
+});
+function traceFor(OriginalComponent) {
+  const TraceComponent = ({
     children,
     ...props
   }) => {
-    return /* @__PURE__ */ import_react.default.createElement(OriginalComponent, { ...props }, /* @__PURE__ */ import_react.default.createElement(HighlightComponent, null), children);
+    return /* @__PURE__ */ import_react.default.createElement(OriginalComponent, { ...props }, /* @__PURE__ */ import_react.default.createElement(RenderTrace, null), children);
   };
-  FunctionalContainer.displayName = "View";
-  return FunctionalContainer;
-};
-var ViewMock = (props) => {
-  return /* @__PURE__ */ import_react.default.createElement(OriginalView, { ...props }, /* @__PURE__ */ import_react.default.createElement(HighlightComponent, null), props.children);
-};
-ViewMock.displayName = "View";
-var ImageMock = (props) => {
-  return /* @__PURE__ */ import_react.default.createElement(OriginalView, { style: { position: "relative" } }, /* @__PURE__ */ import_react.default.createElement(OriginalImage, { ...props }), /* @__PURE__ */ import_react.default.createElement(HighlightComponent, null));
-};
-ImageMock.displayName = "View";
-var HighlightComponent = () => {
-  const [, setForceUpdate] = (0, import_react.useState)({});
-  const renderCountRef = (0, import_react.useRef)(0);
-  const flagRef = (0, import_react.useRef)(true);
-  const timeoutRef = (0, import_react.useRef)();
-  const getColor = () => {
-    const count = renderCountRef.current;
-    if (count === 0) return "transparent";
-    if (count === 1) return "#2ecc71";
-    if (count === 2) return "#f1c40f";
-    if (count === 3) return "#f39c12";
-    return "#e74c3c";
-  };
-  (0, import_react.useEffect)(() => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      if (renderCountRef.current > 0) {
-        renderCountRef.current = 0;
-        flagRef.current = false;
-        setForceUpdate({});
-        flagRef.current = true;
-      }
-    }, 500);
-    return () => {
-      clearTimeout(timeoutRef.current);
-    };
-  });
-  if (flagRef.current) {
-    renderCountRef.current++;
-  }
-  const colorLayerStyle = {
-    borderWidth: 3,
-    borderColor: getColor(),
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0
-  };
-  return /* @__PURE__ */ import_react.default.createElement(OriginalView, { style: colorLayerStyle, pointerEvents: "box-none" });
-};
-function init() {
+  Object.assign(TraceComponent, OriginalComponent);
+  return TraceComponent;
+}
+function renderTrace() {
   Object.defineProperty(import_react_native.default, "View", {
-    value: getMockContainer(OriginalView)
+    value: traceFor(OriginalView)
   });
   Object.defineProperty(import_react_native.default, "TouchableOpacity", {
-    value: getMockContainer(OriginalTouchableOpacity)
+    value: traceFor(OriginalTouchableOpacity)
   });
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  init
+  renderTrace
 });
 //# sourceMappingURL=index.js.map
